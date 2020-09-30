@@ -12,4 +12,10 @@ public enum Type {
     public String getString() {
         return this.string;
     }
+
+    public void setType (String string){
+        if(string == this.string)
+            Type.valueOf(string);
+    }
+
 }

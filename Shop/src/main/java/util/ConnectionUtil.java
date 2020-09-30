@@ -9,7 +9,7 @@ public class ConnectionUtil {
     public static PreparedStatement preparedStatement = null;
     public static CallableStatement callableStatement = null;
 
-
+//Метод, подключающий приложение к БД
     public static void getConnection() throws ClassNotFoundException, SQLException {
 
         Class.forName("com.mysql.jdbc.Driver");
@@ -20,6 +20,7 @@ public class ConnectionUtil {
             System.out.println("Cоединения с БД установлено!");
     }
 
+    //Метод закрывающий потоп ПрепеаредСтейтмент
     public static void closePreparedStatment() {
         if(preparedStatement!=null){
             try {
@@ -32,6 +33,7 @@ public class ConnectionUtil {
         }
     }
 
+    //Метод закрывающий поток КолэйблСтейтмент
     public static void closeCallableStatment() {
         if(callableStatement!=null){
             try {
@@ -43,6 +45,8 @@ public class ConnectionUtil {
             System.out.println("CallableStatement is absent!");
         }
     }
+
+    //Метод закрывающий поток Коенкшион
     public static void closeConnection() {
         if(connection!=null){
             try {

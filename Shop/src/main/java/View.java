@@ -18,56 +18,66 @@ import static util.ConnectionUtil.*;
 
 public class View {
 
-    public String SELECT_by_id_saler = "SELECT  id_saler FROM saler WHERE id_saler = ?";
-    public String SELECT_by_id_prod = "SELECT  id_prod FROM product WHERE id_prod = ?";
-    public String SELECT_by_id_dep = "SELECT  id_dep FROM department WHERE id_dep = ?";
+    public String SELECT_by_FIO = "SELECT  id_saler FROM saler WHERE FIO = ?";
+    public String SELECT_by_name = "SELECT  id_prod FROM product WHERE name_product = ?";
+    public String SELECT_by_name_dep = "SELECT  id_dep FROM department WHERE name_dep = ?";
     public String UPDATE_quantity_prod ="{CALL updateQuantityProd(?,?)}";
     public String SELECT_dep = "SELECT * FROM department";
     public String SELECT_saler = "SELECT * FROM saler";
     public String SELECT_product ="SELECT * FROM product";
 
+    //Конструктор , который запускает приложение
     public View() throws SQLException, ClassNotFoundException {
         run();
     }
 
+    //Метод, который просматривает базу данных на предмет есть такой элемент или нет
     public <T> boolean equalesEntity(T entity) throws SQLException, ClassNotFoundException {
         getConnection();
         boolean bull = false;
         if( entity instanceof Department) {
-            preparedStatement = connection.prepareStatement(SELECT_by_id_dep);
-            preparedStatement.setInt(1, ((Department)entity).getId_department());
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                if (((Department)entity).getId_department()== resultSet.getInt(1)){
-                        bull = true;
+                preparedStatement = connection.prepareStatement(SELECT_by_name_dep);
+                preparedStatement.setString(1, ((Department) entity).getNameDep());
+                ResultSet resultSet = preparedStatement.executeQuery();
+                if(resultSet.next()) {
+                    while (resultSet.next()) {
+                        if (((Department) entity).getNameDep().equalsIgnoreCase(resultSet.getString(1))) {
+                            bull = true;
+                        }
+                    }
                 }
-            }
         }
         if( entity instanceof Saler) {
-            preparedStatement = connection.prepareStatement(SELECT_by_id_saler);
-            preparedStatement.setInt(1, ((Saler)entity).getId_saler());
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                if (((Saler)entity).getId_saler()== resultSet.getInt(1)){
-                    bull = true;
+                preparedStatement = connection.prepareStatement(SELECT_by_FIO);
+                preparedStatement.setString(1, ((Saler) entity).getFio());
+                ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) {
+                    while (resultSet.next()) {
+                        if (((Saler) entity).getFio().equalsIgnoreCase(resultSet.getString(1))) {
+                            bull = true;
+                        }
+                    }
                 }
-            }
         }
         if( entity instanceof Product) {
-            preparedStatement = connection.prepareStatement(SELECT_by_id_prod);
-            preparedStatement.setInt(1, ((Product)entity).getId_product());
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                if (((Product)entity).getId_product()== resultSet.getInt(1)){
-                    bull = true;
+            preparedStatement = connection.prepareStatement(SELECT_by_name);
+                preparedStatement.setString(1, ((Product) entity).getNameProd());
+                ResultSet resultSet = preparedStatement.executeQuery();
+                if(resultSet.next()) {
+                    while (resultSet.next()) {
+                        if (((Product) entity).getNameProd().equalsIgnoreCase(resultSet.getString(1))) {
+                            bull = true;
+                        }
+                    }
                 }
-            }
         }
         closePreparedStatment();
         closeConnection();
         return  bull;
     }
 
+    // Метод, который выдает сообщшение об нахождении такого объекта уже в БД или
+    // увеличивает кол-во
     public <T> void updateDB( T entity) throws SQLException, ClassNotFoundException {
         getConnection();
             if (entity instanceof Department) {
@@ -87,6 +97,7 @@ public class View {
             closeConnection();
     }
 
+    //Метод, который выводит на печать заданный объект по его ИД
     public <T> void printEntity(T entity) throws SQLException, ClassNotFoundException {
         getConnection();
         if( entity instanceof Department){
@@ -128,6 +139,7 @@ public class View {
         closeConnection();
     }
 
+    //Метод, запускающий работу приложения
     public void run() throws SQLException, ClassNotFoundException {
         while (true){
             Scanner scanner = scanner();
@@ -158,10 +170,12 @@ public class View {
 
     }
 
+    //Метод сканера
     public Scanner scanner(){
         return new Scanner(System.in);
     }
 
+    //Метож окончания работы прилоения
     public void stopStart(){
                     if (preparedStatement!= null || callableStatement!= null || connection != null) {
                         closePreparedStatment();
@@ -171,14 +185,16 @@ public class View {
                     System.out.println("Работа с приложением окончена. Досвидания");
     }
 
+    //Метод меню выбора
     public int info(){
         int i = 1;
         while (true) {
             Scanner scanner = scanner();
-            System.out.println("Выбрать : 1 - про отдел\n          2 - про продавца\n          3 - о товаре");
+            System.out.println("Выбрать : 1 - про отдел\n          2 - про продавца\n          3 - о товаре\n" +
+                    "          4 - назад");
             if(scanner.hasNextInt()){
                 i = scanner.nextInt();
-                if(i>=1 && i<=3)
+                if(i>=1 && i<=4)
                 break;
             } else {
                 System.out.println("Повторите свой выбор");
@@ -187,8 +203,10 @@ public class View {
         return i;
     }
 
+    //Метод для вноса информации об объектах в БД
     public void insertData() throws SQLException, ClassNotFoundException {
-        if(info() == 1){
+        int i = info();
+        if(i == 1){
             Department department = new Department();
             ControllerDepartament controllerDepartament = new ControllerDepartament();
             while (true){
@@ -205,22 +223,22 @@ public class View {
                     System.out.println("Повторите ввод");
                 }
             }
-        } else if (info() == 2){
+        } else if (i == 2){
             Saler saler = new Saler();
             ControllerSaler controllerSaler = new ControllerSaler();
             while (true){
                 Scanner scanner = scanner();
+                System.out.println("Внесите Ф.И.О продавца : ");
                 if(scanner.hasNextLine()){
-                    System.out.println("Внесите Ф.И.О продавца : ");
                     saler.setFio(scanner.nextLine());
+                    System.out.println("Внесите дату народження продавца : ");
                     if(scanner.hasNextLine()){
-                        System.out.println("Внесите дату народження продавца : ");
                         saler.setDateBorn(scanner.nextLine());
+                        System.out.println("Внесите ЗП продавца : ");
                         if(scanner.hasNextDouble()){
-                            System.out.println("Внесите ЗП продавца : ");
                             saler.setSalary(scanner.nextDouble());
+                            System.out.println("Внесите ID отдела : ");
                             if(scanner.hasNextInt()){
-                                System.out.println("Внесите ID отдела : ");
                                 saler.setIdDepartment(scanner.nextInt());
                                 if(!equalesEntity(saler)){
                                     controllerSaler.saveSaler(saler);
@@ -239,19 +257,19 @@ public class View {
                     System.out.println("Повторите ввод");
                 }
             }
-        } else if (info() == 3){
+        } else if (i == 3){
             Product product = new Product();
             ControllerProduct controllerProduct = new ControllerProduct();
             while (true){
                 Scanner scanner = scanner();
+                System.out.println("Внесите наименование товара : ");
                 if(scanner.hasNextLine()){
-                    System.out.println("Внесите наименование товара : ");
+                    System.out.println("Внесите кол-во товара : ");
                     product.setNameProd(scanner.nextLine());
                     if(scanner.hasNextInt()){
-                        System.out.println("Внесите кол-во товара : ");
+                        System.out.println("Внесите ID отдела : ");
                         product.setQuantity(scanner.nextInt());
                         if(scanner.hasNextInt()){
-                            System.out.println("Внесите ID отдела : ");
                             product.setIdDepartament(scanner.nextInt());
                                 if(!equalesEntity(product)){
                                     controllerProduct.saveProduct(product);
@@ -267,9 +285,12 @@ public class View {
                         System.out.println("Повторите ввод");
                     }
             }
+        } else if (i == 4){
+            run();
         }
     }
 
+    // Метод выбора типа отделов магазина
     public void choiceType(Department department){
         while (true){
             Scanner scanner = scanner();
@@ -288,16 +309,20 @@ public class View {
         }
     }
 
+    //Метод вывода на печать всех элементов БД по типам
     public void printData() throws SQLException, ClassNotFoundException {
-        if(info() == 1){
+        int i = info();
+        if(i == 1){
             ControllerDepartament conn = new ControllerDepartament();
             conn.printDep();
-        } else if(info() == 2){
+        } else if(i == 2){
             ControllerSaler conn = new ControllerSaler();
             conn.printSaler();
-        } else if(info() == 3){
+        } else if(i == 3){
             ControllerProduct conn = new ControllerProduct();
             conn.printProd();
+        } else if (i == 4){
+            run();
         }
     }
 }

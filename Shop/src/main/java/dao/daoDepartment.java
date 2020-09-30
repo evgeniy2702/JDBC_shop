@@ -16,6 +16,7 @@ public class daoDepartment implements dao<Department> {
     public String SELECT_by_id = "SELECT * FROM department WHERE id_dep =?";
     public String SELECT_all = "SELECT * FROM department";
 
+    //Перегруженый метод записи в БД
     @Override
     public void saveEntity(Department entity) throws SQLException, ClassNotFoundException {
         getConnection();
@@ -33,6 +34,7 @@ public class daoDepartment implements dao<Department> {
         closeConnection();
     }
 
+    //Метод, получения элемента БД по его ИД
     @Override
     public Department getEntityById(Integer idEntity) throws SQLException, ClassNotFoundException {
         Department department = new Department();
@@ -50,6 +52,7 @@ public class daoDepartment implements dao<Department> {
         return department;
     }
 
+    //Метод , выводящий элемент на печать по его ИД
     @Override
     public void print() throws SQLException, ClassNotFoundException {
         getConnection();
@@ -59,7 +62,11 @@ public class daoDepartment implements dao<Department> {
             Department department = new Department();
             department.setId_department(resultSet.getInt("id_dep"));
             department.setNameDep(resultSet.getString("name_dep"));
-            department.setTypeDepartment(Type.valueOf(resultSet.getString("type_department")));
+            for(int i=0; i < Type.values().length; i++) {
+                if(resultSet.getString("type_department").equalsIgnoreCase(Type.values()[i].getString())) {
+                    department.setTypeDepartment(Type.values()[i]);
+                }
+            }
             System.out.println(department.toString());
         }
         closePreparedStatment();

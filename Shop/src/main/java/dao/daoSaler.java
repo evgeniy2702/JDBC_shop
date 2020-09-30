@@ -13,6 +13,8 @@ public class daoSaler implements dao<Saler> {
 //    public String SELECT_id_saler = "SELECT id_saler FROM saler WHERE FIO = ?";
     public String SELECT_by_id_saler = "SELECT  * FROM saler WHERE id_saler = ?";
     public String SELECT_all = "SELECT * FROM saler";
+
+    //Перегруженый метод записи в БД
     @Override
     public void saveEntity(Saler entity) throws SQLException, ClassNotFoundException {
         getConnection();
@@ -32,6 +34,7 @@ public class daoSaler implements dao<Saler> {
         closeConnection();
     }
 
+    //Метод, получения элемента БД по его ИД
     @Override
     public Saler getEntityById(Integer idEntity) throws SQLException, ClassNotFoundException {
         getConnection();
@@ -51,6 +54,7 @@ public class daoSaler implements dao<Saler> {
         return saler;
     }
 
+    //Метод , выводящий элемент на печать по его ИД
     @Override
     public void print() throws SQLException, ClassNotFoundException {
         getConnection();

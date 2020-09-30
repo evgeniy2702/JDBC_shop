@@ -16,6 +16,7 @@ public class daoProduct implements dao<Product> {
     public String SELECT_by_id_product = "SELECT * FROM product WHERE id_prod = ?";
     public String SELECT_all = "SELECT * FROM product";
 
+    //Перегруженый метод записи в БД
     @Override
     public void saveEntity(Product entity) throws SQLException, ClassNotFoundException {
         getConnection();
@@ -34,6 +35,7 @@ public class daoProduct implements dao<Product> {
         closeConnection();
     }
 
+    //Метод, получения элемента БД по его ИД
     @Override
     public Product getEntityById(Integer idEntity) throws SQLException, ClassNotFoundException {
         getConnection();
@@ -52,6 +54,7 @@ public class daoProduct implements dao<Product> {
         return product;
     }
 
+    //Метод , выводящий элемент на печать по его ИД
     @Override
     public void print() throws SQLException, ClassNotFoundException {
         getConnection();

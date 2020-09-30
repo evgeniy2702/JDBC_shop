@@ -77,6 +77,6 @@ public class Department {
     public String toString() {
         return "Отдел : уникальный номер: " + id_department +
                 "; наименование отдела: " + nameDep +
-                "; тип отдела" + typeDepartment.getString();
+                "; тип отдела: " + typeDepartment.getString();
     }
 }
