@@ -19,7 +19,7 @@ create table `saler`
 (
 	`id_saler` int not null auto_increment primary key,
     `FIO` varchar(100) not null,
-    `date_born` date not null,
+    `date_born` varchar(10) not null,
     `salary` double not null,
     `dep_id_s` int not null
 );
@@ -52,3 +52,36 @@ ADD CONSTRAINT `fk_id_dep_p_id_dep`
    ON DELETE CASCADE
    ON UPDATE CASCADE;
    
+   USE `shop`;
+DROP procedure IF EXISTS `getIdProd`;
+
+DELIMITER $$
+USE `shop`$$
+CREATE PROCEDURE `getIdProd` (OUT nameProd varchar(100))
+BEGIN
+	SELECT `id_prod`
+    FROM `product`
+    WHERE `name_product` = nameProd;
+END$$
+
+DELIMITER ;
+
+USE `shop`$$
+DROP procedure IF EXISTS `updateQuantityProd`;
+
+DELIMITER $$
+USE `shop`$$
+CREATE PROCEDURE `updateQuantityProd`(IN prodID INT, OUT valueProd INT)
+BEGIN
+UPDATE `product` 
+SET `quantity` = `quantity` + valueProd
+WHERE `id_prod` = prodID;
+END$$
+
+DELIMITER ;
+
+SET @valueProd = 5;
+CALL `updateQuantityProd`(1,@valueProd);
+
+SET @nameProd = 'мыло';
+CALL `getIdProd`(@nameProd);

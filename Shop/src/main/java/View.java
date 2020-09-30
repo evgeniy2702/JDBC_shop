@@ -18,10 +18,11 @@ import static util.ConnectionUtil.*;
 
 public class View {
 
-    public String SELECT_by_FIO = "SELECT  id_saler FROM saler WHERE FIO = ?";
-    public String SELECT_by_name = "SELECT  id_prod FROM product WHERE name_product = ?";
-    public String SELECT_by_name_dep = "SELECT  id_dep FROM department WHERE name_dep = ?";
-    public String UPDATE_quantity_prod ="{CALL updateQuantityProd(?,?)}";
+    public String SELECT_by_FIO = "SELECT  FIO FROM saler WHERE FIO = ?";
+    public String SELECT_by_name = "SELECT  name_product FROM product WHERE name_product = ?";
+    public String SELECT_by_name_dep = "SELECT  name_dep FROM department WHERE name_dep = ?";
+    public String UPDATE_quantity_prod ="UPDATE `product` SET `quantity` = `quantity` + ? WHERE `id_prod` = ?";
+    public String SELECT_id_prod = "SELECT `id_prod` FROM `product` as idP WHERE `name_product` = ?";
     public String SELECT_dep = "SELECT * FROM department";
     public String SELECT_saler = "SELECT * FROM saler";
     public String SELECT_product ="SELECT * FROM product";
@@ -60,16 +61,14 @@ public class View {
                 }
         }
         if( entity instanceof Product) {
-            preparedStatement = connection.prepareStatement(SELECT_by_name);
+                preparedStatement = connection.prepareStatement(SELECT_by_name);
                 preparedStatement.setString(1, ((Product) entity).getNameProd());
                 ResultSet resultSet = preparedStatement.executeQuery();
-                if(resultSet.next()) {
                     while (resultSet.next()) {
                         if (((Product) entity).getNameProd().equalsIgnoreCase(resultSet.getString(1))) {
                             bull = true;
                         }
                     }
-                }
         }
         closePreparedStatment();
         closeConnection();
@@ -87,10 +86,10 @@ public class View {
                 System.out.println("Such a saler already exist");
             }
             if( entity instanceof Product){
-                callableStatement = connection.prepareCall(UPDATE_quantity_prod);
-                callableStatement.setInt(1, ((Product)entity).getId_product());
-                callableStatement.registerOutParameter(2, Types.INTEGER);
-                callableStatement.executeUpdate();
+                preparedStatement = connection.prepareCall(UPDATE_quantity_prod);
+                preparedStatement.setInt(1, ((Product)entity).getQuantity());
+                preparedStatement.setInt(2, ((Product)entity).getId_product());
+                preparedStatement.executeUpdate();
                 System.out.println("Product quantity increased by " + ((Product)entity).getQuantity());
             }
         closePreparedStatment();
@@ -217,6 +216,8 @@ public class View {
                     choiceType(department);
                     if(!equalesEntity(department)){
                         controllerDepartament.saveDepartment(department);
+                    } else {
+                        updateDB(department);
                     }
                     break;
                 } else {
@@ -242,6 +243,8 @@ public class View {
                                 saler.setIdDepartment(scanner.nextInt());
                                 if(!equalesEntity(saler)){
                                     controllerSaler.saveSaler(saler);
+                                } else {
+                                    updateDB(saler);
                                 }
                                 break;
                             } else {
@@ -273,6 +276,17 @@ public class View {
                             product.setIdDepartament(scanner.nextInt());
                                 if(!equalesEntity(product)){
                                     controllerProduct.saveProduct(product);
+                                } else {
+                                    getConnection();
+                                    preparedStatement = connection.prepareCall(SELECT_id_prod);
+                                    preparedStatement.setString(1,product.getNameProd());
+                                    ResultSet resultSet = preparedStatement.executeQuery();
+                                    while (resultSet.next()) {
+                                            product.setId_product(resultSet.getInt(1));
+                                        }
+                                    closePreparedStatment();
+                                    closeConnection();
+                                    updateDB(product);
                                 }
                                 break;
                             } else {
