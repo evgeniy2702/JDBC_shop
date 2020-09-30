@@ -9,9 +9,6 @@ import shop.Type;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 import static util.ConnectionUtil.*;
@@ -40,24 +37,20 @@ public class View {
                 preparedStatement = connection.prepareStatement(SELECT_by_name_dep);
                 preparedStatement.setString(1, ((Department) entity).getNameDep());
                 ResultSet resultSet = preparedStatement.executeQuery();
-                if(resultSet.next()) {
                     while (resultSet.next()) {
                         if (((Department) entity).getNameDep().equalsIgnoreCase(resultSet.getString(1))) {
                             bull = true;
                         }
-                    }
                 }
         }
         if( entity instanceof Saler) {
                 preparedStatement = connection.prepareStatement(SELECT_by_FIO);
                 preparedStatement.setString(1, ((Saler) entity).getFio());
                 ResultSet resultSet = preparedStatement.executeQuery();
-                if (resultSet.next()) {
                     while (resultSet.next()) {
                         if (((Saler) entity).getFio().equalsIgnoreCase(resultSet.getString(1))) {
                             bull = true;
                         }
-                    }
                 }
         }
         if( entity instanceof Product) {
@@ -96,6 +89,17 @@ public class View {
             closeConnection();
     }
 
+    public void selectIdProd(Product product) throws SQLException, ClassNotFoundException {
+        getConnection();
+        preparedStatement = connection.prepareCall(SELECT_id_prod);
+        preparedStatement.setString(1,product.getNameProd());
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while (resultSet.next()) {
+            product.setId_product(resultSet.getInt(1));
+        }
+        closePreparedStatment();
+        closeConnection();
+    }
     //Метод, который выводит на печать заданный объект по его ИД
     public <T> void printEntity(T entity) throws SQLException, ClassNotFoundException {
         getConnection();
@@ -277,15 +281,7 @@ public class View {
                                 if(!equalesEntity(product)){
                                     controllerProduct.saveProduct(product);
                                 } else {
-                                    getConnection();
-                                    preparedStatement = connection.prepareCall(SELECT_id_prod);
-                                    preparedStatement.setString(1,product.getNameProd());
-                                    ResultSet resultSet = preparedStatement.executeQuery();
-                                    while (resultSet.next()) {
-                                            product.setId_product(resultSet.getInt(1));
-                                        }
-                                    closePreparedStatment();
-                                    closeConnection();
+                                    selectIdProd(product);
                                     updateDB(product);
                                 }
                                 break;
