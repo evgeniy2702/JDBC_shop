@@ -80,8 +80,15 @@ END$$
 
 DELIMITER ;
 
+
+
+
 SET @valueProd = 5;
 CALL `updateQuantityProd`(1,@valueProd);
 
-SET @nameProd = 'мыло';
-CALL `getIdProd`(@nameProd);
+
+
+set @nameProd = 'мыло';
+CALL getIdProd(@nameProd);
+select @nameProd;
+

@@ -33,19 +33,6 @@ public class ConnectionUtil {
         }
     }
 
-    //Метод закрывающий поток КолэйблСтейтмент
-    public static void closeCallableStatment() {
-        if(callableStatement!=null){
-            try {
-                callableStatement.close();
-            }catch (SQLException e){
-                System.out.println(e.getMessage());
-            }
-        } else {
-            System.out.println("CallableStatement is absent!");
-        }
-    }
-
     //Метод закрывающий поток Коенкшион
     public static void closeConnection() {
         if(connection!=null){

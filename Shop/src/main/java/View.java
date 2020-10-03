@@ -89,6 +89,7 @@ public class View {
             closeConnection();
     }
 
+    //Метод реализующий присвоение продукту ИД в случае совпадения имени с именем из БД
     public void selectIdProd(Product product) throws SQLException, ClassNotFoundException {
         getConnection();
         preparedStatement = connection.prepareCall(SELECT_id_prod);
@@ -182,7 +183,6 @@ public class View {
     public void stopStart(){
                     if (preparedStatement!= null || callableStatement!= null || connection != null) {
                         closePreparedStatment();
-                        closeCallableStatment();
                         closeConnection();
                     }
                     System.out.println("Работа с приложением окончена. Досвидания");
